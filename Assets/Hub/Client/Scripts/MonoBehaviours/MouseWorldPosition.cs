@@ -1,0 +1,24 @@
+using UnityEngine;
+
+namespace Hub.Client.Scripts.MonoBehaviours
+{
+    public class MouseWorldPosition : MonoBehaviour
+    {
+        public static MouseWorldPosition Instance { get; private set; }
+
+        void Awake() => 
+            Instance = this;
+
+        public Vector3 GetMousePosition()
+        {
+            Ray mouseCameraRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+            Plane plane = new Plane(Vector3.up, Vector3.zero);
+
+            if (plane.Raycast(mouseCameraRay, out float distance))
+                return mouseCameraRay.GetPoint(distance);
+
+            return Vector3.zero;
+        }
+    }
+}
