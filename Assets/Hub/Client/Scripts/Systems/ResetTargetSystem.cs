@@ -1,9 +1,10 @@
 using Unity.Burst;
 using Unity.Entities;
+using Unity.Transforms;
 
 namespace Hub.Client.Scripts.Systems
 {
-    [UpdateInGroup(typeof(LateSimulationSystemGroup))]
+    [UpdateInGroup(typeof(SimulationSystemGroup), OrderFirst = true)]
     public partial struct ResetTargetSystem : ISystem
     {
         [BurstCompile]
@@ -11,10 +12,13 @@ namespace Hub.Client.Scripts.Systems
         {
             foreach (RefRW<Target> target in SystemAPI.Query<RefRW<Target>>())
             {
-                if (!SystemAPI.Exists(target.ValueRO.TargetEntity))
-                {
+                Entity entity = target.ValueRO.TargetEntity;
+                
+                if(entity == Entity.Null)
+                    continue;
+                
+                if (!SystemAPI.Exists(entity) || !SystemAPI.HasComponent<LocalTransform>(entity)) 
                     target.ValueRW.TargetEntity = Entity.Null;
-                }
             }
         }
     }

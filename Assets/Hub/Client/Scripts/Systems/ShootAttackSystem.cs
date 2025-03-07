@@ -1,7 +1,7 @@
 using Unity.Burst;
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.Transforms;
-using UnityEngine;
 
 namespace Hub.Client.Scripts.Systems
 {
@@ -10,17 +10,19 @@ namespace Hub.Client.Scripts.Systems
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            // EntitiesReferences entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>();
-            
+            EntitiesReferences entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>();
+
             foreach (
                 (
-                    RefRO<LocalTransform> transform,
+                    RefRW<LocalTransform> transform,
                     RefRW<ShootAttack> attack,
-                    RefRO<Target> target)
+                    RefRO<Target> target,
+                    RefRW<UnitMover> mover)
                 in SystemAPI.Query<
-                    RefRO<LocalTransform>,
+                    RefRW<LocalTransform>,
                     RefRW<ShootAttack>,
-                    RefRO<Target>>())
+                    RefRO<Target>,
+                    RefRW<UnitMover>>())
             {
                 if (target.ValueRO.TargetEntity == Entity.Null)
                     continue;
@@ -31,7 +33,37 @@ namespace Hub.Client.Scripts.Systems
                     continue;
                 }
 
+                LocalTransform targetTransform = SystemAPI.GetComponent<LocalTransform>(target.ValueRO.TargetEntity);
+
+                if (math.distance(transform.ValueRO.Position, targetTransform.Position) > attack.ValueRO.AttackDistance)
+                {
+                    mover.ValueRW.TargetPosition = targetTransform.Position;
+                    continue;
+                }
+                else
+                {
+                    mover.ValueRW.TargetPosition = transform.ValueRO.Position;
+                }
+
+                float3 aimDirection = targetTransform.Position - transform.ValueRO.Position;
+                aimDirection = math.normalize(aimDirection);
+
+                quaternion targetRotation = quaternion.LookRotation(aimDirection, math.up());
+                transform.ValueRW.Rotation = math.slerp(transform.ValueRO.Rotation, targetRotation, 
+                    SystemAPI.Time.DeltaTime * mover.ValueRO.RotationSpeed);
+                
                 attack.ValueRW.TimerState = attack.ValueRO.TimerMax;
+
+                float3 bulletSpawnWorldPosition =
+                    transform.ValueRO.TransformPoint(attack.ValueRO.BulletSpawnLocalPosition);
+                Entity bulletEntity = state.EntityManager.Instantiate(entitiesReferences.BulletPrefab);
+                SystemAPI.SetComponent(bulletEntity, LocalTransform.FromPosition(bulletSpawnWorldPosition));
+
+                RefRW<Bullet> bullet = SystemAPI.GetComponentRW<Bullet>(bulletEntity);
+                bullet.ValueRW.DamageAmount = attack.ValueRO.DamageAmount;
+
+                RefRW<Target> bulletTarget = SystemAPI.GetComponentRW<Target>(bulletEntity);
+                bulletTarget.ValueRW.TargetEntity = target.ValueRO.TargetEntity;
             }
         }
     }

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Hub.Client.Scripts
 {
-    public class BulletAuthoring : MonoBehaviour
+    public class BulletAuth : MonoBehaviour
     {
         public float Speed;
         public int DamageAmount;
@@ -22,9 +22,9 @@ namespace Hub.Client.Scripts
             Destroy(trail, 0.5f); 
         }
 
-        private class Baker : Baker<BulletAuthoring>
+        private class Baker : Baker<BulletAuth>
         {
-            public override void Bake(BulletAuthoring auth)
+            public override void Bake(BulletAuth auth)
             {
                 Entity entity = GetEntity(TransformUsageFlags.Dynamic);
                 AddComponent(entity, new Bullet()

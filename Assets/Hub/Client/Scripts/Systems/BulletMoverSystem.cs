@@ -24,19 +24,30 @@ namespace Hub.Client.Scripts.Systems
                              RefRO<Bullet>,
                              RefRO<Target>>().WithEntityAccess())
             {
+                if (target.ValueRO.TargetEntity == Entity.Null 
+                    || !SystemAPI.HasComponent<LocalTransform>(target.ValueRO.TargetEntity))
+                {
+                    ecb.DestroyEntity(entity);
+                    continue;
+                }
+                
                 LocalTransform targetTransform = SystemAPI.GetComponent<LocalTransform>(target.ValueRO.TargetEntity);
-
-                var distanceBeforeMove = math.distancesq(transform.ValueRO.Position, targetTransform.Position);
-                float3 moveDirection = targetTransform.Position - transform.ValueRO.Position;
+                ShootVictim shootVictim = SystemAPI.GetComponent<ShootVictim>(target.ValueRO.TargetEntity);
+                // float3 targetPosition = targetTransform.Position;// targetTransform.TransformPoint(shootVictim.HitLocalPosition);
+                float3 targetPosition = targetTransform.TransformPoint(shootVictim.HitLocalPosition);
+                
+                var distanceBeforeMove = math.distancesq(transform.ValueRO.Position, targetPosition);
+                // var distanceBeforeMove = math.distancesq(transform.ValueRO.Position, targetTransform.Position);
+                float3 moveDirection = targetPosition - transform.ValueRO.Position;
                 moveDirection = math.normalize(moveDirection);
 
                 transform.ValueRW.Rotation = Quaternion.LookRotation(moveDirection);
                 transform.ValueRW.Position += moveDirection * bullet.ValueRO.Speed * SystemAPI.Time.DeltaTime;
 
-                var distanceAfterMove = math.distancesq(transform.ValueRO.Position, targetTransform.Position);
+                var distanceAfterMove = math.distancesq(transform.ValueRO.Position, targetPosition);
 
                 if (distanceBeforeMove < distanceAfterMove) 
-                    transform.ValueRW.Position = targetTransform.Position;
+                    transform.ValueRW.Position = targetPosition;
 
                 float destroyDistSq = .2f;
                 if (distanceBeforeMove < destroyDistSq)

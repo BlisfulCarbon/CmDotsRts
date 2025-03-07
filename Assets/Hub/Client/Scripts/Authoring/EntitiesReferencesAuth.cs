@@ -13,13 +13,16 @@ namespace Hub.Client.Scripts
             public override void Bake(EntitiesReferencesAuth auth)
             {
                 Entity entity = GetEntity(TransformUsageFlags.Dynamic);
-                AddComponent(entity, new EntitiesReferences());
+                AddComponent(entity, new EntitiesReferences()
+                {
+                    BulletPrefab =  GetEntity(auth.BulletPrefab, TransformUsageFlags.Dynamic),
+                });
             }
         }
     }
 
     public struct EntitiesReferences : IComponentData
     {
-        
+        public Entity BulletPrefab;
     }
 }
