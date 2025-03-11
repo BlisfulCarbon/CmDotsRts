@@ -52,9 +52,10 @@ namespace Hub.Client.Scripts.Systems
                 float destroyDistSq = .2f;
                 if (distanceBeforeMove < destroyDistSq)
                 {
-                    RefRW<Health> targetHeath = SystemAPI.GetComponentRW<Health>(target.ValueRO.TargetEntity);
-                    targetHeath.ValueRW.Amount -= bullet.ValueRO.DamageAmount;
-
+                    RefRW<Health> health = SystemAPI.GetComponentRW<Health>(target.ValueRO.TargetEntity);
+                    health.ValueRW.Amount -= bullet.ValueRO.DamageAmount;
+                    health.ValueRW.OnChange = true;
+                    
                     ecb.DestroyEntity(entity);
                 }
             }

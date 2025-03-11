@@ -8,6 +8,8 @@ using Unity.Transforms;
 [BurstCompile]
 partial struct UnitMovementSystem : ISystem
 {
+    public const float REACHED_TARGET_DISTANCE_SQ = .2f;
+
     public void OnUpdate(ref SystemState state)
     {
         foreach ((
@@ -38,8 +40,7 @@ public partial struct UnitMoverJob : IJobEntity
     {
         float3 moveDirection = mover.TargetPosition - localTransform.Position;
 
-        float reachedTargetDistanceSq = 2f;
-        if (math.lengthsq(moveDirection) < reachedTargetDistanceSq)
+        if (math.lengthsq(moveDirection) < UnitMovementSystem.REACHED_TARGET_DISTANCE_SQ)
         {
             physics.Linear = float3.zero;
             physics.Linear = float3.zero;

@@ -6,6 +6,7 @@ namespace Hub.Client.Scripts
     public class HealthAuth : MonoBehaviour
     {
         public int Amount;
+        public int Max;
         private class HealthAuthBaker : Baker<HealthAuth>
         {
             public override void Bake(HealthAuth auth)
@@ -14,6 +15,7 @@ namespace Hub.Client.Scripts
                 AddComponent(entity, new Health()
                 {
                    Amount = auth.Amount,
+                   Max = auth.Max,
                 });
             }
         }
@@ -22,5 +24,8 @@ namespace Hub.Client.Scripts
     public struct Health : IComponentData
     {
         public int Amount;
+        public int Max;
+
+        public bool OnChange;
     }
 }

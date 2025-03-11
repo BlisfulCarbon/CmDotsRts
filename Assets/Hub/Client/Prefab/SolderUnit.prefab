@@ -43,17 +43,21 @@ PrefabInstance:
       propertyPath: m_Name
       value: SolderUnit
       objectReference: {fileID: 0}
+    - target: {fileID: 5475365652509289140, guid: 0d3a3325e61a8c44c96ba5c4ffe57a62, type: 3}
+      propertyPath: Max
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 6776846270798972866, guid: 0d3a3325e61a8c44c96ba5c4ffe57a62, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 6776846270798972866, guid: 0d3a3325e61a8c44c96ba5c4ffe57a62, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 6776846270798972866, guid: 0d3a3325e61a8c44c96ba5c4ffe57a62, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 6776846270798972866, guid: 0d3a3325e61a8c44c96ba5c4ffe57a62, type: 3}
       propertyPath: m_LocalRotation.w

@@ -3,7 +3,7 @@ using Unity.Entities;
 
 namespace Hub.Client.Scripts.Systems
 {
-    [UpdateInGroup(typeof(LateSimulationSystemGroup))]
+    [UpdateInGroup(typeof(LateSimulationSystemGroup), OrderLast = true)]
     public partial struct ResetEventsSystems : ISystem
     {
         [BurstCompile]
@@ -13,6 +13,11 @@ namespace Hub.Client.Scripts.Systems
             {
                 selected.ValueRW.onSelected = false;
                 selected.ValueRW.onDeselected = false;
+            }
+
+            foreach (RefRW<Health> health in SystemAPI.Query<RefRW<Health>>())
+            {
+                health.ValueRW.OnChange = false;
             }
         }
     }

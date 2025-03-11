@@ -41,6 +41,9 @@ namespace Hub.Client.Scripts.Systems
                 {
                     foreach (var distanceHit in distanceHits)
                     {
+                        if(!SystemAPI.Exists(distanceHit.Entity) || !SystemAPI.HasComponent<Unit>(distanceHit.Entity)) 
+                            continue;
+                        
                         Unit targetUnit = SystemAPI.GetComponent<Unit>(distanceHit.Entity);
                         if (targetUnit.Faction == findTarget.ValueRO.TargetFaction)
                         {
