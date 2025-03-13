@@ -49,9 +49,9 @@ namespace Hub.Client.Scripts.Systems
                 aimDirection = math.normalize(aimDirection);
 
                 quaternion targetRotation = quaternion.LookRotation(aimDirection, math.up());
-                transform.ValueRW.Rotation = math.slerp(transform.ValueRO.Rotation, targetRotation, 
+                transform.ValueRW.Rotation = math.slerp(transform.ValueRO.Rotation, targetRotation,
                     SystemAPI.Time.DeltaTime * mover.ValueRO.RotationSpeed);
-                
+
                 attack.ValueRW.TimerState = attack.ValueRO.TimerMax;
 
                 float3 bulletSpawnWorldPosition =
@@ -64,6 +64,12 @@ namespace Hub.Client.Scripts.Systems
 
                 RefRW<Target> bulletTarget = SystemAPI.GetComponentRW<Target>(bulletEntity);
                 bulletTarget.ValueRW.TargetEntity = target.ValueRO.TargetEntity;
+
+                attack.ValueRW.OnShoot.IsTriggered = true;
+                attack.ValueRW.OnShoot.ShootFromPosition = bulletSpawnWorldPosition;
+                
+                Entity shootLightEntity = state.EntityManager.Instantiate(entitiesReferences.ShootLightPrefab);
+                SystemAPI.SetComponent(shootLightEntity, LocalTransform.FromPosition(bulletSpawnWorldPosition));
             }
         }
     }

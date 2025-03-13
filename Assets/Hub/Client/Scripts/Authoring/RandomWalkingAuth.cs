@@ -33,7 +33,7 @@ namespace Hub.Client.Scripts
         }
     }
 
-    public struct RandomWalking : IComponentData
+    public struct RandomWalking : IComponentData, IEnableableComponent
     {
         public float3 TargetPosition;
         public float3 OriginPosition;

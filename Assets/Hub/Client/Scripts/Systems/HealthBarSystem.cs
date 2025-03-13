@@ -44,9 +44,7 @@ namespace Hub.Client.Scripts.Systems
                 float healthNormalized = (float)health.Amount / health.Max;
 
                 if (healthNormalized == 1f)
-                {
                     transform.ValueRW.Scale = 0f;
-                }
                 else
                     transform.ValueRW.Scale = 1f;
 

@@ -7,6 +7,7 @@ namespace Hub.Client.Scripts
     {
         public GameObject BulletPrefab;
         public GameObject ZombiePrefab;
+        public GameObject ShootLightPrefab;
         
         private class Baker : Baker<EntitiesReferencesAuth>
         {
@@ -17,6 +18,7 @@ namespace Hub.Client.Scripts
                 {
                     BulletPrefab =  GetEntity(auth.BulletPrefab, TransformUsageFlags.Dynamic),
                     ZombiePrefab = GetEntity(auth.ZombiePrefab, TransformUsageFlags.Dynamic),
+                    ShootLightPrefab = GetEntity(auth.ShootLightPrefab, TransformUsageFlags.Dynamic),
                 });
             }
         }
@@ -26,5 +28,6 @@ namespace Hub.Client.Scripts
     {
         public Entity BulletPrefab;
         public Entity ZombiePrefab;
+        public Entity ShootLightPrefab;
     }
 }

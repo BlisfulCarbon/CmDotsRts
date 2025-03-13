@@ -16,6 +16,7 @@ namespace Hub.Client.Scripts
                 {
                    Amount = auth.Amount,
                    Max = auth.Max,
+                   OnChange = true,
                 });
             }
         }

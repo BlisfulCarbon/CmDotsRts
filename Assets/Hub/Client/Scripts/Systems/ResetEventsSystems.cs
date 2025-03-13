@@ -19,6 +19,11 @@ namespace Hub.Client.Scripts.Systems
             {
                 health.ValueRW.OnChange = false;
             }
+            
+            foreach (RefRW<ShootAttack> shootAttack in SystemAPI.Query<RefRW<ShootAttack>>())
+            {
+                shootAttack.ValueRW.OnShoot.IsTriggered = false;
+            }
         }
     }
 }

@@ -33,9 +33,17 @@ namespace Hub.Client.Scripts
         public int DamageAmount;
         public float AttackDistance;
         public float3 BulletSpawnLocalPosition;
+
+        public OnShootEvent OnShoot;
         
         //Timer
         public float TimerMax;
         public float TimerState;
+        
+        public struct OnShootEvent
+        {
+            public bool IsTriggered;
+            public float3 ShootFromPosition;
+        }
     }
 }

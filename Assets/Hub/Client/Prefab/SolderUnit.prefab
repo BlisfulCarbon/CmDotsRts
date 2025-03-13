@@ -135,7 +135,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5822e14fc83d429ba160ddb217ef8667, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Range: 9
+  Range: 12
   TargetFaction: 1
   UpdateTimer: 0.2
 --- !u!114 &5963590410585033241
@@ -152,7 +152,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DamageAmount: 10
   AttackDelay: 0.3
-  AttackDistance: 7
+  AttackDistance: 9
   BulletSpawnPosition: {fileID: 3190120295578701207}
 --- !u!4 &6399383684870144422 stripped
 Transform:
