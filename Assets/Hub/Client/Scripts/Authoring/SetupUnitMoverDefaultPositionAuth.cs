@@ -17,8 +17,6 @@ namespace Hub.Client.Scripts
 
     public struct SetupUnitMoverDefaultPosition : IComponentData
     {
- 
-        
         
     }
 }

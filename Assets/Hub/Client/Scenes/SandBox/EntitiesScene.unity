@@ -298,7 +298,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e53562c2f0c043acb64a264dba31646d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TimerMax: 1.5
+  TimerMax: 1.2
   RandomWalkingDistMin: 1
   RandomWalkingDistMax: 3
 --- !u!4 &564449394

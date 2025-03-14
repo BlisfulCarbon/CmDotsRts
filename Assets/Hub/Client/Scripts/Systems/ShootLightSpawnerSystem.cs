@@ -6,6 +6,11 @@ namespace Hub.Client.Scripts.Systems
 {
     public partial struct ShootLightSpawnerSystem : ISystem
     {
+        public void OnCreate(ref SystemState state)
+        {
+            state.RequireForUpdate<EntitiesReferences>();
+        }
+
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {

@@ -133,7 +133,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5822e14fc83d429ba160ddb217ef8667, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Range: 15
+  Range: 20
   TargetFaction: 0
   UpdateTimer: 0.2
 --- !u!114 &2197860507011265294

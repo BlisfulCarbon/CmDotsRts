@@ -1,3 +1,4 @@
+using Unity.Burst;
 using Unity.Entities;
 using Unity.Transforms;
 
@@ -5,6 +6,7 @@ namespace Hub.Client.Scripts.Systems
 {
     public partial struct SetupUnitMoverDefaultPositionSystem : ISystem
     {
+        [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
             EntityCommandBuffer ecb = SystemAPI.GetSingleton

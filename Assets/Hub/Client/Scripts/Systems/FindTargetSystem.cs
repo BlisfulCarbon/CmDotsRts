@@ -2,6 +2,7 @@ using Hub.Client.Scripts.MonoBehaviours;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Transforms;
 
@@ -39,18 +40,44 @@ namespace Hub.Client.Scripts.Systems
                 if (collisionWorld.OverlapSphere(transform.ValueRO.Position, findTarget.ValueRO.Range, ref distanceHits,
                         collisionFilter))
                 {
+                    Entity closetTargetEntity = Entity.Null;
+                    float closetTargetDistance = float.MaxValue;
+                    float closetTargetDistanceOffset = 0f;
+                    
+                    if (target.ValueRO.TargetEntity != Entity.Null)
+                    {
+                        closetTargetEntity = target.ValueRO.TargetEntity;
+                        LocalTransform targetTransform = SystemAPI.GetComponent<LocalTransform>(target.ValueRO.TargetEntity);
+                        closetTargetDistance = math.distance(transform.ValueRO.Position, targetTransform.Position);
+                        closetTargetDistanceOffset = 2f;
+                    }
+                    
                     foreach (var distanceHit in distanceHits)
                     {
-                        if(!SystemAPI.Exists(distanceHit.Entity) || !SystemAPI.HasComponent<Unit>(distanceHit.Entity)) 
+                        if (!SystemAPI.Exists(distanceHit.Entity) || !SystemAPI.HasComponent<Unit>(distanceHit.Entity))
                             continue;
-                        
+
                         Unit targetUnit = SystemAPI.GetComponent<Unit>(distanceHit.Entity);
                         if (targetUnit.Faction == findTarget.ValueRO.TargetFaction)
                         {
-                            target.ValueRW.TargetEntity = distanceHit.Entity;
-                            break;
+                            if (closetTargetEntity == Entity.Null)
+                            {
+                                closetTargetEntity = distanceHit.Entity;
+                                closetTargetDistance = distanceHit.Distance;
+                            }
+                            else
+                            {
+                                if (closetTargetDistance + closetTargetDistanceOffset > distanceHit.Distance)
+                                {
+                                    closetTargetEntity = distanceHit.Entity;
+                                    closetTargetDistance = distanceHit.Distance;
+                                }
+                            }
                         }
                     }
+
+                    if (closetTargetEntity != Entity.Null)
+                        target.ValueRW.TargetEntity = closetTargetEntity;
                 }
             }
         }
