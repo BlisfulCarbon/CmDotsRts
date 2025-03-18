@@ -29,7 +29,6 @@ namespace Hub.Client.Scripts.MonoBehaviours
             }
             else if (Input.GetMouseButtonUp(0))
             {
-                var selectionMousePositionUp = Input.mousePosition;
                 EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
 
                 //Deselect
@@ -46,7 +45,6 @@ namespace Hub.Client.Scripts.MonoBehaviours
 
                     entityManager.SetComponentData(entities[i], selected);
                 }
-                // entityQuery.CopyFromComponentDataArray(selecteds);
 
                 var selectionAreaRect = GetSelectionAreaRect();
                 float selectionAreaSize = selectionAreaRect.width + selectionAreaRect.height;
@@ -54,7 +52,6 @@ namespace Hub.Client.Scripts.MonoBehaviours
                 bool isMultipleSelection = selectionAreaSize > multipleSelectionSizeMinimum;
 
                 //Select
-
                 if (isMultipleSelection)
                 {
                     entityQuery = new EntityQueryBuilder(Allocator.Temp)
@@ -96,7 +93,7 @@ namespace Hub.Client.Scripts.MonoBehaviours
                     };
 
                     if (collisionWorld.CastRay(rayCastInput, out Unity.Physics.RaycastHit rayCastHit))
-                        if (entityManager.HasComponent<Unit>(rayCastHit.Entity) && 
+                        if (entityManager.HasComponent<Unit>(rayCastHit.Entity) &&
                             entityManager.HasComponent<Selected>(rayCastHit.Entity))
                         {
                             entityManager.SetComponentEnabled<Selected>(rayCastHit.Entity, true);
@@ -109,28 +106,88 @@ namespace Hub.Client.Scripts.MonoBehaviours
                 OnSelectionAreaEnd?.Invoke(this, EventArgs.Empty);
             }
 
-
             if (Input.GetMouseButtonDown(1))
             {
                 Vector3 mouseWorldPosition = MouseWorldPosition.Instance.GetMousePosition();
 
                 EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
-                EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<UnitMover, Selected>()
-                    .Build(entityManager);
 
-                NativeArray<Entity> entities = query.ToEntityArray(Allocator.Temp);
-                NativeArray<UnitMover> unitMovers = query.ToComponentDataArray<UnitMover>(Allocator.Temp);
-                NativeArray<float3> movePositions = GenerateMovePositionArray(mouseWorldPosition, entities.Length);
-
-                for (int i = 0; i < unitMovers.Length; i++)
+                EntityQuery entityQuery = entityManager.CreateEntityQuery(typeof(PhysicsWorldSingleton));
+                PhysicsWorldSingleton physicsWorldSingleton = entityQuery.GetSingleton<PhysicsWorldSingleton>();
+                CollisionWorld collisionWorld = physicsWorldSingleton.CollisionWorld;
+                UnityEngine.Ray cameraRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+                RaycastInput rayCastInput = new RaycastInput()
                 {
-                    UnitMover unitMover = unitMovers[i];
-                    unitMover.TargetPosition = movePositions[i];
-                    unitMovers[i] = unitMover;
-                    // entityManager.SetComponentData(entities[i], unitMover);
-                }
+                    Start = cameraRay.GetPoint(0f),
+                    End = cameraRay.GetPoint(9999f),
+                    Filter = new CollisionFilter()
+                    {
+                        BelongsTo = ~0u,
+                        CollidesWith = 1u << GameAssets.UNITS_LAYER,
+                        GroupIndex = 0,
+                    }
+                };
 
-                query.CopyFromComponentDataArray(unitMovers);
+                bool isAttackingSingleTarget = false;
+                if (collisionWorld.CastRay(rayCastInput, out Unity.Physics.RaycastHit rayCastHit))
+                    if (entityManager.HasComponent<Unit>(rayCastHit.Entity))
+                    {
+                        Unit unit = entityManager.GetComponentData<Unit>(rayCastHit.Entity);
+
+                        if (unit.Faction == Faction.Zombie)
+                        {
+                            isAttackingSingleTarget = true;
+                            
+                            EntityQuery query = new EntityQueryBuilder(Allocator.Temp)
+                                .WithAll<Selected>()
+                                .WithPresent<TargetOverride>()
+                                .Build(entityManager);
+
+                            NativeArray<Entity> entities = query.ToEntityArray(Allocator.Temp);
+                            NativeArray<TargetOverride> targetOverrides =
+                                query.ToComponentDataArray<TargetOverride>(Allocator.Temp);
+
+                            for (int i = 0; i < targetOverrides.Length; i++)
+                            {
+                                TargetOverride targetOverride = targetOverrides[i];
+                                targetOverride.TargetEntity = rayCastHit.Entity;
+                                targetOverrides[i] = targetOverride;
+                                entityManager.SetComponentEnabled<MoveOverride>(entities[i], true);
+                            }
+
+                            query.CopyFromComponentDataArray(targetOverrides);
+                        }
+                    }
+
+                if (!isAttackingSingleTarget)
+                {
+                    EntityQuery query = new EntityQueryBuilder(Allocator.Temp)
+                        .WithAll<Selected>()
+                        .WithPresent<MoveOverride, TargetOverride>()
+                        .Build(entityManager);
+
+                    NativeArray<Entity> entities = query.ToEntityArray(Allocator.Temp);
+                    NativeArray<MoveOverride> moveOverrides = query.ToComponentDataArray<MoveOverride>(Allocator.Temp);
+                    NativeArray<TargetOverride> targetOverrides =
+                        query.ToComponentDataArray<TargetOverride>(Allocator.Temp);
+                    NativeArray<float3> movePositions = GenerateMovePositionArray(mouseWorldPosition, entities.Length);
+
+                    for (int i = 0; i < moveOverrides.Length; i++)
+                    {
+                        MoveOverride unitMover = moveOverrides[i];
+                        unitMover.TargetPosition = movePositions[i];
+                        moveOverrides[i] = unitMover;
+                        entityManager.SetComponentEnabled<MoveOverride>(entities[i], true);
+
+
+                        TargetOverride targetOverride = targetOverrides[i];
+                        targetOverride.TargetEntity = Entity.Null;
+                        targetOverrides[i] = targetOverride;
+                    }
+
+                    query.CopyFromComponentDataArray(moveOverrides);
+                    query.CopyFromComponentDataArray(targetOverrides);
+                }
             }
         }
 

@@ -5,6 +5,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Transforms;
+using UnityEngine;
 
 namespace Hub.Client.Scripts.Systems
 {
@@ -17,8 +18,16 @@ namespace Hub.Client.Scripts.Systems
             CollisionWorld collisionWorld = physicsWorldSingleton.CollisionWorld;
             NativeList<DistanceHit> distanceHits = new NativeList<DistanceHit>(Allocator.Temp);
 
-            foreach ((RefRO<LocalTransform> transform, RefRW<FindTarget> findTarget, RefRW<Target> target)
-                     in SystemAPI.Query<RefRO<LocalTransform>, RefRW<FindTarget>, RefRW<Target>>())
+            foreach ((
+                         RefRO<LocalTransform> transform, 
+                         RefRW<FindTarget> findTarget, 
+                         RefRW<Target> target, 
+                         RefRO<TargetOverride> targetOverride)
+                     in SystemAPI.Query<
+                         RefRO<LocalTransform>, 
+                         RefRW<FindTarget>, 
+                         RefRW<Target>,
+                        RefRO<TargetOverride>>())
             {
                 #region Timer
 
@@ -29,6 +38,13 @@ namespace Hub.Client.Scripts.Systems
 
                 #endregion Timer
 
+                if (targetOverride.ValueRO.TargetEntity != Entity.Null)
+                {
+                    target.ValueRW.TargetEntity = targetOverride.ValueRO.TargetEntity;
+                    Debug.Log("Override");
+                    continue;
+                }
+                
                 distanceHits.Clear();
                 CollisionFilter collisionFilter = new CollisionFilter()
                 {

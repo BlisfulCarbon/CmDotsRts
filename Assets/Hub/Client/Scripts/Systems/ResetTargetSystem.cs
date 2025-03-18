@@ -20,6 +20,17 @@ namespace Hub.Client.Scripts.Systems
                 if (!SystemAPI.Exists(entity) || !SystemAPI.HasComponent<LocalTransform>(entity)) 
                     target.ValueRW.TargetEntity = Entity.Null;
             }
+            
+            foreach (RefRW<TargetOverride> targetOverride in SystemAPI.Query<RefRW<TargetOverride>>())
+            {
+                Entity entity = targetOverride.ValueRO.TargetEntity;
+                
+                if(entity == Entity.Null)
+                    continue;
+                
+                if (!SystemAPI.Exists(entity) || !SystemAPI.HasComponent<LocalTransform>(entity)) 
+                    targetOverride.ValueRW.TargetEntity = Entity.Null;
+            }
         }
     }
 }

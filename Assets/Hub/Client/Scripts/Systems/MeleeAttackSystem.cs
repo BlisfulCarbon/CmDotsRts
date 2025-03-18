@@ -27,18 +27,19 @@ namespace Hub.Client.Scripts.Systems
                              RefRW<MeleeAttack>,
                              RefRO<Target>,
                              RefRW<UnitMover>>()
+                         .WithDisabled<MoveOverride>()
                          .WithEntityAccess())
             {
                 if (target.ValueRO.TargetEntity == Entity.Null)
                 {
-                    if (SystemAPI.HasComponent<RandomWalking>(entity))
-                        SystemAPI.SetComponentEnabled<RandomWalking>(entity, true);
+                    // if (SystemAPI.HasComponent<RandomWalking>(entity))
+                    //     SystemAPI.SetComponentEnabled<RandomWalking>(entity, true);
                     
                     continue;
                 }
 
-                if (SystemAPI.HasComponent<RandomWalking>(entity))
-                    SystemAPI.SetComponentEnabled<RandomWalking>(entity, false);
+                // if (SystemAPI.HasComponent<RandomWalking>(entity))
+                //     SystemAPI.SetComponentEnabled<RandomWalking>(entity, false);
 
                 LocalTransform targetTransform = SystemAPI.GetComponent<LocalTransform>(target.ValueRO.TargetEntity);
                 float meleeAttackDistanceSq = 2f;

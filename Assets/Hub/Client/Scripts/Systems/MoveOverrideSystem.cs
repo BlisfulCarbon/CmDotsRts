@@ -4,6 +4,9 @@ using Unity.Transforms;
 
 namespace Hub.Client.Scripts.Systems
 {
+    // [UpdateBefore(typeof(FindTargetSystem))]
+    [UpdateBefore(typeof(FindTargetSystem))]
+    [UpdateInGroup(typeof(LateSimulationSystemGroup))]
     public partial struct MoveOverrideSystem : ISystem
     {
         public void OnUpdate(ref SystemState state)

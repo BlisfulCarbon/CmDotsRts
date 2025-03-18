@@ -27,7 +27,8 @@ namespace Hub.Client.Scripts.Systems
                     RefRW<LocalTransform>,
                     RefRW<ShootAttack>,
                     RefRO<Target>,
-                    RefRW<UnitMover>>())
+                    RefRW<UnitMover>>()
+                    .WithDisabled<MoveOverride>())
             {
                 if (target.ValueRO.TargetEntity == Entity.Null)
                     continue;
@@ -55,7 +56,7 @@ namespace Hub.Client.Scripts.Systems
 
                 quaternion targetRotation = quaternion.LookRotation(aimDirection, math.up());
                 transform.ValueRW.Rotation = math.slerp(transform.ValueRO.Rotation, targetRotation,
-                    SystemAPI.Time.DeltaTime * mover.ValueRO.RotationSpeed);
+                    SystemAPI.Time.DeltaTime * 100);
 
                 attack.ValueRW.TimerState = attack.ValueRO.TimerMax;
 
