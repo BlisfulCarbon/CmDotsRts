@@ -41,7 +41,6 @@ namespace Hub.Client.Scripts.Systems
                 if (targetOverride.ValueRO.TargetEntity != Entity.Null)
                 {
                     target.ValueRW.TargetEntity = targetOverride.ValueRO.TargetEntity;
-                    Debug.Log("Override");
                     continue;
                 }
                 

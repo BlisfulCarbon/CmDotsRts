@@ -22,13 +22,15 @@ namespace Hub.Client.Scripts.Systems
                     RefRW<LocalTransform> transform,
                     RefRW<ShootAttack> attack,
                     RefRO<Target> target,
-                    RefRW<UnitMover> mover)
+                    RefRW<UnitMover> mover, 
+                    Entity entity)
                 in SystemAPI.Query<
-                    RefRW<LocalTransform>,
-                    RefRW<ShootAttack>,
-                    RefRO<Target>,
-                    RefRW<UnitMover>>()
-                    .WithDisabled<MoveOverride>())
+                        RefRW<LocalTransform>,
+                        RefRW<ShootAttack>,
+                        RefRO<Target>,
+                        RefRW<UnitMover>>()
+                    .WithDisabled<MoveOverride>()
+                    .WithEntityAccess())
             {
                 if (target.ValueRO.TargetEntity == Entity.Null)
                     continue;
@@ -51,6 +53,11 @@ namespace Hub.Client.Scripts.Systems
                     mover.ValueRW.TargetPosition = transform.ValueRO.Position;
                 }
 
+                RefRW<TargetOverride> enemyTargetOverride =
+                    SystemAPI.GetComponentRW<TargetOverride>(target.ValueRO.TargetEntity);
+                if (enemyTargetOverride.ValueRO.TargetEntity == Entity.Null)
+                    enemyTargetOverride.ValueRW.TargetEntity = entity;
+                
                 float3 aimDirection = targetTransform.Position - transform.ValueRO.Position;
                 aimDirection = math.normalize(aimDirection);
 
@@ -73,7 +80,7 @@ namespace Hub.Client.Scripts.Systems
 
                 attack.ValueRW.OnShoot.IsTriggered = true;
                 attack.ValueRW.OnShoot.ShootFromPosition = bulletSpawnWorldPosition;
-                
+
                 Entity shootLightEntity = state.EntityManager.Instantiate(entitiesReferences.ShootLightPrefab);
                 SystemAPI.SetComponent(shootLightEntity, LocalTransform.FromPosition(bulletSpawnWorldPosition));
             }
