@@ -23,7 +23,7 @@ namespace Hub.Client.Scripts
         }
     }
 
-    internal struct HealthBar : IComponentData
+    public struct HealthBar : IComponentData
     {
         public Entity BarVisual;
         public Entity Health;

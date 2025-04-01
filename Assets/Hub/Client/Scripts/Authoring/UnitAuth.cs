@@ -1,5 +1,4 @@
 using Unity.Entities;
-using UnityEditor.SceneManagement;
 using UnityEngine;
 
 namespace Hub.Client.Scripts
