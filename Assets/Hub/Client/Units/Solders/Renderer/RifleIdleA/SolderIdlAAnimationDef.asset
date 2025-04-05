@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b2fe493f3fc47ed9242ed3938755cb6, type: 3}
+  m_Name: SolderIdlAAnimationDef
+  m_EditorClassIdentifier: 
+  ID: 1
+  FrameTimerMax: 0.1
+  Meshes:
+  - {fileID: 4300000, guid: b16d4b030b4f07d428d0362c9bf96d30, type: 2}
+  - {fileID: 4300000, guid: 2542115c2765b3d4880a2018251ebe20, type: 2}
+  - {fileID: 4300000, guid: 5fd2dc6d4a53cba4e8668b68dd64fbb5, type: 2}
+  - {fileID: 4300000, guid: b02c9d9395f02754596be79b0fc3dc26, type: 2}
+  - {fileID: 4300000, guid: 20b712e9ff799e0449515440cf3dd57b, type: 2}
