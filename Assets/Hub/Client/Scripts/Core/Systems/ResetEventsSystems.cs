@@ -1,7 +1,7 @@
 using Unity.Burst;
 using Unity.Entities;
 
-namespace Hub.Client.Scripts.Systems
+namespace Hub.Client.Scripts.Core.Systems
 {
     [UpdateInGroup(typeof(LateSimulationSystemGroup), OrderLast = true)]
     public partial struct ResetEventsSystems : ISystem
@@ -12,24 +12,7 @@ namespace Hub.Client.Scripts.Systems
             new ResetSelectedEventsJob().ScheduleParallel();
             new ResetHealthEventJob().ScheduleParallel();
             new ResetShootAttackEventJob().ScheduleParallel();
-
-            /*
-            foreach (RefRW<Selected> selected in SystemAPI.Query<RefRW<Selected>>().WithPresent<Selected>())
-            {
-                selected.ValueRW.onSelected = false;
-                selected.ValueRW.onDeselected = false;
-            }
-
-            foreach (RefRW<Health> health in SystemAPI.Query<RefRW<Health>>())
-            {
-                health.ValueRW.OnChange = false;
-            }
-
-            foreach (RefRW<ShootAttack> shootAttack in SystemAPI.Query<RefRW<ShootAttack>>())
-            {
-                shootAttack.ValueRW.OnShoot.IsTriggered = false;
-            }
-            */
+            new ResetMeleeAttackEventJob().ScheduleParallel();
         }
     }
 
@@ -59,6 +42,15 @@ namespace Hub.Client.Scripts.Systems
         {
             selected.onSelected = false;
             selected.onDeselected = false;
+        }
+    }
+    
+    [BurstCompile]
+    public partial struct ResetMeleeAttackEventJob : IJobEntity
+    {
+        public void Execute(ref MeleeAttack shootAttack)
+        {
+            shootAttack.OnAttack = false;
         }
     }
 }

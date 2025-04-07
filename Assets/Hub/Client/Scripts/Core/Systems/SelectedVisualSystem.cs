@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Hub.Client.Scripts.Systems
 {
-    [UpdateBefore(typeof(ResetEventsSystems))]
+    [UpdateBefore(typeof(Core.Systems.ResetEventsSystems))]
     [UpdateInGroup(typeof(LateSimulationSystemGroup))]
     public partial struct SelectedVisualSystem : ISystem
     {

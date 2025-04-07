@@ -8,6 +8,9 @@ namespace Hub.Client.Scripts.Units
     {
         public AnimationSO.AnimationID Idle;
         public AnimationSO.AnimationID Run;
+        public AnimationSO.AnimationID Shoot;
+        public AnimationSO.AnimationID Aim;
+        public AnimationSO.AnimationID MeleeAttack;
 
         private class Baker : Baker<UnitAnimationsAuth>
         {
@@ -18,8 +21,10 @@ namespace Hub.Client.Scripts.Units
                 {
                     Idle = auth.Idle,
                     Run = auth.Run,
+                    Shoot = auth.Shoot,
+                    Aim = auth.Aim,
+                    MeleeAttack = auth.MeleeAttack
                 });
-
             }
         }
     }
@@ -28,5 +33,8 @@ namespace Hub.Client.Scripts.Units
     {
         public AnimationSO.AnimationID Idle;
         public AnimationSO.AnimationID Run;
+        public AnimationSO.AnimationID Shoot;
+        public AnimationSO.AnimationID Aim;
+        public AnimationSO.AnimationID MeleeAttack;
     }
 }

@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b2fe493f3fc47ed9242ed3938755cb6, type: 3}
   m_Name: ZombieAtackAnimationDef
   m_EditorClassIdentifier: 
+  ID: 7
   FrameTimerMax: 0.2
   Meshes:
-  - {fileID: 4300000, guid: f51534e281a1c624486339c0a92e65b2, type: 2}
-  - {fileID: 4300000, guid: 717ca2ac496f6294eae27213a96865ea, type: 2}
-  - {fileID: 4300000, guid: 26136f3979a01c4478bb7440b4a825e0, type: 2}
-  - {fileID: 4300000, guid: 9b52510316372d448b6c8157802ff0f1, type: 2}
-  - {fileID: 4300000, guid: a0ed6aa25a3e9694f92aab8b73dde214, type: 2}
+  - {fileID: 4300000, guid: 9d490cbd2b21ece41aacf6d1ce093c49, type: 2}
+  - {fileID: 4300000, guid: e887f2582fbd5814ea098ccd7a81955b, type: 2}
+  - {fileID: 4300000, guid: 8a1f0b7d72684bc468475a8b55401a49, type: 2}
+  - {fileID: 4300000, guid: 15834c5a47e2da54da9aace0fd298930, type: 2}
+  - {fileID: 4300000, guid: 4e27ea35c89c1e54a870c21f2cc2cae1, type: 2}

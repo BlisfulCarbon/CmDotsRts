@@ -7,11 +7,14 @@ namespace Hub.Client.Scripts.Animations
     {
         public enum AnimationID
         {
-            None = 0,
-            SoldierIdleA = 1,
-            SoldierRun = 2,
-            ZombieIdle = 3,
-            ZombieRun = 4,
+            None,
+            SoldierIdleA,
+            SoldierRun,
+            SoldierShoot,
+            ZombieIdle,
+            ZombieRun,
+            SoldierAim,
+            ZombieMeleeAttack,
         }
 
         public AnimationID ID;

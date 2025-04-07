@@ -4,8 +4,10 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Transforms;
+using UnityEngine;
+using RaycastHit = Unity.Physics.RaycastHit;
 
-namespace Hub.Client.Scripts.Systems
+namespace Hub.Client.Scripts.Core.Systems
 {
     public partial struct MeleeAttackSystem : ISystem
     {
@@ -32,14 +34,9 @@ namespace Hub.Client.Scripts.Systems
             {
                 if (target.ValueRO.TargetEntity == Entity.Null)
                 {
-                    // if (SystemAPI.HasComponent<RandomWalking>(entity))
-                    //     SystemAPI.SetComponentEnabled<RandomWalking>(entity, true);
                     
                     continue;
                 }
-
-                // if (SystemAPI.HasComponent<RandomWalking>(entity))
-                //     SystemAPI.SetComponentEnabled<RandomWalking>(entity, false);
 
                 LocalTransform targetTransform = SystemAPI.GetComponent<LocalTransform>(target.ValueRO.TargetEntity);
                 float meleeAttackDistanceSq = 2f;
@@ -85,6 +82,8 @@ namespace Hub.Client.Scripts.Systems
                     RefRW<Health> targetHealth = SystemAPI.GetComponentRW<Health>(target.ValueRO.TargetEntity);
                     targetHealth.ValueRW.Amount -= attack.ValueRO.DamageAmount;
                     targetHealth.ValueRW.OnChange = true;
+
+                    attack.ValueRW.OnAttack = true;
                 }
             }
         }

@@ -33,5 +33,7 @@ namespace Hub.Client.Scripts
         public float TimerMax;
         public int DamageAmount;
         public float ColliderSize;
+
+        public bool OnAttack;
     }
 }

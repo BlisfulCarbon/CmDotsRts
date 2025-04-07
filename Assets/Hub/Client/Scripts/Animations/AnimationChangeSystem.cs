@@ -10,25 +10,35 @@ namespace Hub.Client.Scripts.Animations
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            AnimationDataHolder animationDataHolder = SystemAPI.GetSingleton<AnimationDataHolder>();
-            
-            foreach ((
-                         RefRW<ActiveAnimation> activeAnimation, 
-                         RefRW<MaterialMeshInfo> materialMeshInfo) in SystemAPI.Query<
-                         RefRW<ActiveAnimation>,
-                         RefRW<MaterialMeshInfo>>())
+            new AnimationChangeJob()
             {
-                if (activeAnimation.ValueRO.AnimationID != activeAnimation.ValueRO.AnimationIDNext)
-                {
-                    activeAnimation.ValueRW.Frame = 0;
-                    activeAnimation.ValueRW.FrameTimer = 0f;
-                    activeAnimation.ValueRW.AnimationID = activeAnimation.ValueRO.AnimationIDNext;
+                Animations = SystemAPI.GetSingleton<AnimationDataHolder>().Animations,
+            }.ScheduleParallel();
+        }
+    }
 
-                    ref AnimationData animationData =
-                        ref animationDataHolder.Animations.Value[(int)activeAnimation.ValueRW.AnimationID];
+    public partial struct AnimationChangeJob : IJobEntity
+    {
+        public BlobAssetReference<BlobArray<AnimationData>> Animations;
 
-                    materialMeshInfo.ValueRW.MeshID = animationData.BatchMeshId[0];
-                }
+        public void Execute(ref ActiveAnimation animation, ref MaterialMeshInfo mesh)
+        {
+            if (animation.AnimationID == AnimationSO.AnimationID.SoldierShoot)
+                return;
+
+            if (animation.AnimationID == AnimationSO.AnimationID.ZombieMeleeAttack)
+                return;
+
+            if (animation.AnimationID != animation.AnimationIDNext)
+            {
+                animation.Frame = 0;
+                animation.FrameTimer = 0f;
+                animation.AnimationID = animation.AnimationIDNext;
+
+                ref AnimationData animationData =
+                    ref Animations.Value[(int)animation.AnimationID];
+
+                mesh.MeshID = animationData.BatchMeshId[0];
             }
         }
     }

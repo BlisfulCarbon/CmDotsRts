@@ -3,7 +3,7 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Transforms;
 
-namespace Hub.Client.Scripts.Systems
+namespace Hub.Client.Scripts.Core.Systems
 {
     [UpdateInGroup(typeof(SimulationSystemGroup), OrderFirst = true)]
     public partial struct ResetTargetSystem : ISystem
