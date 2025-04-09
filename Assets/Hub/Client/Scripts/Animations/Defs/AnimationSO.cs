@@ -15,10 +15,32 @@ namespace Hub.Client.Scripts.Animations
             ZombieRun,
             SoldierAim,
             ZombieMeleeAttack,
+ 
+            ScoutIdle,
+            ScoutRun,
+            ScoutAim,
+            ScoutShoot,
         }
 
         public AnimationID ID;
         public float FrameTimerMax;
         public Mesh[] Meshes;
+        
+    }
+    
+    public static class AnimationIDExtensions
+    {
+        public static bool IsUninterruptible(this AnimationSO.AnimationID source)
+        {
+            switch (source)
+            {
+                case AnimationSO.AnimationID.SoldierShoot:
+                case AnimationSO.AnimationID.ScoutShoot:
+                case AnimationSO.AnimationID.ZombieMeleeAttack:
+                    return true;
+                
+                default: return false;
+            }
+        }
     }
 }

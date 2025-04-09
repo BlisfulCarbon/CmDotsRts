@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b2fe493f3fc47ed9242ed3938755cb6, type: 3}
+  m_Name: ScoutShotAnimationDef
+  m_EditorClassIdentifier: 
+  ID: 11
+  FrameTimerMax: 0.08
+  Meshes:
+  - {fileID: 4300000, guid: 8118985e8607a24469f7beb9325ccf6f, type: 2}
+  - {fileID: 4300000, guid: 433cbf0bcb73fe14c9a517c6b656d857, type: 2}
+  - {fileID: 4300000, guid: 8658dfc06068b4642936b17ad24ced38, type: 2}
+  - {fileID: 4300000, guid: b4c80e6ac1d7c2847baabbce6217cba7, type: 2}
+  - {fileID: 4300000, guid: 3879b659355bc4c4082d5cc0171a20b7, type: 2}
+  - {fileID: 4300000, guid: a23ad943c4c453344b9e363b4b7b8bdf, type: 2}
+  - {fileID: 4300000, guid: 1625e4d9eff0c744395acb18010a6924, type: 2}
+  - {fileID: 4300000, guid: 69a30fbc9e954eb4bae8ca80c7d6004a, type: 2}
+  - {fileID: 4300000, guid: d032d7fa62e6d8940ad21f1fb0bd61e0, type: 2}
+  - {fileID: 4300000, guid: 39dc6f5fcb3992c49bf8ad44cc018f8d, type: 2}

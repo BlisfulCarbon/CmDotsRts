@@ -8,6 +8,10 @@ namespace Hub.Client.Scripts.Animations
     public partial struct AnimationChangeSystem : ISystem
     {
         [BurstCompile]
+        public void OnCreate(ref SystemState state) =>
+            state.RequireForUpdate<AnimationDataHolder>();
+
+        [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
             new AnimationChangeJob()
@@ -23,10 +27,7 @@ namespace Hub.Client.Scripts.Animations
 
         public void Execute(ref ActiveAnimation animation, ref MaterialMeshInfo mesh)
         {
-            if (animation.AnimationID == AnimationSO.AnimationID.SoldierShoot)
-                return;
-
-            if (animation.AnimationID == AnimationSO.AnimationID.ZombieMeleeAttack)
+            if (animation.AnimationID.IsUninterruptible())
                 return;
 
             if (animation.AnimationID != animation.AnimationIDNext)
@@ -38,7 +39,7 @@ namespace Hub.Client.Scripts.Animations
                 ref AnimationData animationData =
                     ref Animations.Value[(int)animation.AnimationID];
 
-                mesh.MeshID = animationData.BatchMeshId[0];
+                mesh.Mesh = animationData.BatchMeshId[0];
             }
         }
     }

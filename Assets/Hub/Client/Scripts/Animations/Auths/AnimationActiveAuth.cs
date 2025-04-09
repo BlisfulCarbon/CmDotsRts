@@ -12,9 +12,6 @@ namespace Hub.Client.Scripts.Animations
         {
             public override void Bake(AnimationActiveAuth auth)
             {
-                EntitiesGraphicsSystem graphics = World.DefaultGameObjectInjectionWorld
-                    .GetExistingSystemManaged<EntitiesGraphicsSystem>();
-
                 Entity entity = GetEntity(TransformUsageFlags.Dynamic);
 
                 AddComponent(entity, new ActiveAnimation()

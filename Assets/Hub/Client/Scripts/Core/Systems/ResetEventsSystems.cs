@@ -1,18 +1,30 @@
 using Unity.Burst;
+using Unity.Collections;
 using Unity.Entities;
+using Unity.Jobs;
 
 namespace Hub.Client.Scripts.Core.Systems
 {
     [UpdateInGroup(typeof(LateSimulationSystemGroup), OrderLast = true)]
     public partial struct ResetEventsSystems : ISystem
     {
+        NativeArray<JobHandle> states;
+
+        [BurstCompile]
+        public void OnCreate(ref SystemState state)
+        {
+            states = new NativeArray<JobHandle>(4, Allocator.Persistent);
+        }
+
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            new ResetSelectedEventsJob().ScheduleParallel();
-            new ResetHealthEventJob().ScheduleParallel();
-            new ResetShootAttackEventJob().ScheduleParallel();
-            new ResetMeleeAttackEventJob().ScheduleParallel();
+            states[0] = new ResetSelectedEventsJob().ScheduleParallel(state.Dependency);
+            states[1] = new ResetHealthEventJob().ScheduleParallel(state.Dependency);
+            states[2] = new ResetShootAttackEventJob().ScheduleParallel(state.Dependency);
+            states[3] = new ResetMeleeAttackEventJob().ScheduleParallel(state.Dependency);
+
+            state.Dependency = JobHandle.CombineDependencies(states);
         }
     }
 
@@ -44,7 +56,7 @@ namespace Hub.Client.Scripts.Core.Systems
             selected.onDeselected = false;
         }
     }
-    
+
     [BurstCompile]
     public partial struct ResetMeleeAttackEventJob : IJobEntity
     {
