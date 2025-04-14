@@ -50,7 +50,6 @@ namespace Hub.Client.Scripts.Animations
 
                     if (animation.Frame == 0 && animation.AnimationID.IsUninterruptible())
                     {
-                        Debug.Log($"{animation.AnimationID} set none");
                         animation.AnimationID = AnimationSO.AnimationID.None;
                     }
                 } 

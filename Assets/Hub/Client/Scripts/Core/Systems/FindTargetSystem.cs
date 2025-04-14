@@ -1,3 +1,4 @@
+using Hub.Client.Scripts.Core;
 using Hub.Client.Scripts.MonoBehaviours;
 using Unity.Burst;
 using Unity.Collections;
@@ -19,36 +20,32 @@ namespace Hub.Client.Scripts.Systems
             NativeList<DistanceHit> distanceHits = new NativeList<DistanceHit>(Allocator.Temp);
 
             foreach ((
-                         RefRO<LocalTransform> transform, 
-                         RefRW<FindTarget> findTarget, 
-                         RefRW<Target> target, 
+                         RefRO<LocalTransform> transform,
+                         RefRW<FindTarget> findTarget,
+                         RefRW<Target> target,
                          RefRO<TargetOverride> targetOverride)
                      in SystemAPI.Query<
-                         RefRO<LocalTransform>, 
-                         RefRW<FindTarget>, 
+                         RefRO<LocalTransform>,
+                         RefRW<FindTarget>,
                          RefRW<Target>,
-                        RefRO<TargetOverride>>())
+                         RefRO<TargetOverride>>())
             {
-                #region Timer
-
                 findTarget.ValueRW.TimerState -= SystemAPI.Time.DeltaTime;
                 if (findTarget.ValueRO.TimerState > 0)
                     continue;
                 findTarget.ValueRW.TimerState = findTarget.ValueRO.TimerDelay;
-
-                #endregion Timer
 
                 if (targetOverride.ValueRO.TargetEntity != Entity.Null)
                 {
                     target.ValueRW.TargetEntity = targetOverride.ValueRO.TargetEntity;
                     continue;
                 }
-                
+
                 distanceHits.Clear();
                 CollisionFilter collisionFilter = new CollisionFilter()
                 {
                     BelongsTo = ~0u,
-                    CollidesWith = 1u << GameAssets.UNITS_LAYER,
+                    CollidesWith = 1u << GameAssets.UNITS_LAYER | 1u << GameAssets.BUILDINGS_LAYER,
                     GroupIndex = 0,
                 };
 
@@ -58,39 +55,42 @@ namespace Hub.Client.Scripts.Systems
                     Entity closetTargetEntity = Entity.Null;
                     float closetTargetDistance = float.MaxValue;
                     float closetTargetDistanceOffset = 0f;
-                    
+
                     if (target.ValueRO.TargetEntity != Entity.Null)
                     {
                         closetTargetEntity = target.ValueRO.TargetEntity;
-                        LocalTransform targetTransform = SystemAPI.GetComponent<LocalTransform>(target.ValueRO.TargetEntity);
+                        LocalTransform targetTransform =
+                            SystemAPI.GetComponent<LocalTransform>(target.ValueRO.TargetEntity);
                         closetTargetDistance = math.distance(transform.ValueRO.Position, targetTransform.Position);
                         closetTargetDistanceOffset = 2f;
                     }
-                    
-                    foreach (var distanceHit in distanceHits)
+
+                    foreach (var hit in distanceHits)
                     {
-                        if (!SystemAPI.Exists(distanceHit.Entity) || !SystemAPI.HasComponent<Unit>(distanceHit.Entity))
+                        if (!SystemAPI.Exists(hit.Entity) ||
+                            !SystemAPI.HasComponent<Faction>(hit.Entity))
                             continue;
 
-                        Unit targetUnit = SystemAPI.GetComponent<Unit>(distanceHit.Entity);
-                        if (targetUnit.Faction == findTarget.ValueRO.TargetFaction)
+                        Faction faction = SystemAPI.GetComponent<Faction>(hit.Entity);
+                        if (faction.ID == findTarget.ValueRO.TargetFactionID)
                         {
                             if (closetTargetEntity == Entity.Null)
                             {
-                                closetTargetEntity = distanceHit.Entity;
-                                closetTargetDistance = distanceHit.Distance;
+                                closetTargetEntity = hit.Entity;
+                                closetTargetDistance = hit.Distance;
                             }
                             else
                             {
-                                if (closetTargetDistance + closetTargetDistanceOffset > distanceHit.Distance)
+                                if (closetTargetDistance + closetTargetDistanceOffset > hit.Distance)
                                 {
-                                    closetTargetEntity = distanceHit.Entity;
-                                    closetTargetDistance = distanceHit.Distance;
+                                    closetTargetEntity = hit.Entity;
+                                    closetTargetDistance = hit.Distance;
                                 }
                             }
                         }
                     }
 
+                    
                     if (closetTargetEntity != Entity.Null)
                         target.ValueRW.TargetEntity = closetTargetEntity;
                 }

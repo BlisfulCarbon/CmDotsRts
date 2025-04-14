@@ -22,7 +22,7 @@ namespace Hub.Client.Scripts.Systems
                     RefRW<LocalTransform> transform,
                     RefRW<ShootAttack> attack,
                     RefRO<Target> target,
-                    RefRW<UnitMover> mover, 
+                    RefRW<UnitMover> mover,
                     Entity entity)
                 in SystemAPI.Query<
                         RefRW<LocalTransform>,
@@ -35,11 +35,6 @@ namespace Hub.Client.Scripts.Systems
                 if (target.ValueRO.TargetEntity == Entity.Null)
                     continue;
 
-                if (attack.ValueRO.TimerState > 0)
-                {
-                    attack.ValueRW.TimerState -= SystemAPI.Time.DeltaTime;
-                    continue;
-                }
 
                 LocalTransform targetTransform = SystemAPI.GetComponent<LocalTransform>(target.ValueRO.TargetEntity);
 
@@ -53,18 +48,57 @@ namespace Hub.Client.Scripts.Systems
                     mover.ValueRW.TargetPosition = transform.ValueRO.Position;
                 }
 
-                RefRW<TargetOverride> enemyTargetOverride =
-                    SystemAPI.GetComponentRW<TargetOverride>(target.ValueRO.TargetEntity);
-                if (enemyTargetOverride.ValueRO.TargetEntity == Entity.Null)
-                    enemyTargetOverride.ValueRW.TargetEntity = entity;
-                
+                if (SystemAPI.HasComponent<TargetOverride>(target.ValueRO.TargetEntity))
+                {
+                    RefRW<TargetOverride> enemyTargetOverride =
+                        SystemAPI.GetComponentRW<TargetOverride>(target.ValueRO.TargetEntity);
+                    if (enemyTargetOverride.ValueRO.TargetEntity == Entity.Null)
+                        enemyTargetOverride.ValueRW.TargetEntity = entity;
+                }
+
                 float3 aimDirection = targetTransform.Position - transform.ValueRO.Position;
                 aimDirection = math.normalize(aimDirection);
 
                 quaternion targetRotation = quaternion.LookRotation(aimDirection, math.up());
                 transform.ValueRW.Rotation = math.slerp(transform.ValueRO.Rotation, targetRotation,
-                    SystemAPI.Time.DeltaTime * 100);
+                    SystemAPI.Time.DeltaTime * mover.ValueRO.RotationSpeed);
+            }
 
+            foreach (
+                (
+                    RefRW<LocalTransform> transform,
+                    RefRW<ShootAttack> attack,
+                    RefRO<Target> target,
+                    Entity entity)
+                in SystemAPI.Query<
+                        RefRW<LocalTransform>,
+                        RefRW<ShootAttack>,
+                        RefRO<Target>>()
+                    .WithEntityAccess())
+            {
+ 
+                if (target.ValueRO.TargetEntity == Entity.Null)
+                    continue;
+
+                LocalTransform targetTransform = SystemAPI.GetComponent<LocalTransform>(target.ValueRO.TargetEntity);
+
+                if (math.distance(transform.ValueRO.Position, targetTransform.Position) > attack.ValueRO.AttackDistance)
+                {
+                    // Target is too far;
+                    continue;
+                }
+
+                if (SystemAPI.HasComponent<MoveOverride>(entity) && SystemAPI.IsComponentEnabled<MoveOverride>(entity))
+                {
+                    continue;
+                }
+                    
+                if (attack.ValueRO.TimerState > 0)
+                {
+                    attack.ValueRW.TimerState -= SystemAPI.Time.DeltaTime;
+                    continue;
+                }
+                
                 attack.ValueRW.TimerState = attack.ValueRO.TimerMax;
 
                 float3 bulletSpawnWorldPosition =

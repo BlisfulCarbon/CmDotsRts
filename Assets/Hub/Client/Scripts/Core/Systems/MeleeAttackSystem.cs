@@ -4,7 +4,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Transforms;
-using UnityEngine;
+
 using RaycastHit = Unity.Physics.RaycastHit;
 
 namespace Hub.Client.Scripts.Core.Systems
@@ -33,10 +33,7 @@ namespace Hub.Client.Scripts.Core.Systems
                          .WithEntityAccess())
             {
                 if (target.ValueRO.TargetEntity == Entity.Null)
-                {
-                    
                     continue;
-                }
 
                 LocalTransform targetTransform = SystemAPI.GetComponent<LocalTransform>(target.ValueRO.TargetEntity);
                 float meleeAttackDistanceSq = 2f;

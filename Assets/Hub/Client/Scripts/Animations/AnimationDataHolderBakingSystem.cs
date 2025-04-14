@@ -13,18 +13,12 @@ namespace Hub.Client.Scripts.Animations
     {
         public void OnUpdate(ref SystemState state)
         {
-            AnimationListSO listSo = default;
-            foreach (RefRO<AnimationDefsRef> item in SystemAPI.Query<RefRO<AnimationDefsRef>>())
-                listSo = item.ValueRO.Animations;
+            AnimationListSO listSo = GetAnimations(ref state);
 
             Dictionary<AnimationSO.AnimationID, int[]> blobAsset = new Dictionary<AnimationSO.AnimationID, int[]>();
 
-            var animationKeys = Enum.GetValues(typeof(AnimationSO.AnimationID));
-            foreach (AnimationSO.AnimationID animationID in animationKeys)
-            {
-                AnimationSO def = listSo.GetAnimations(animationID);
-                blobAsset[animationID] = new int[def.Meshes.Length];
-            }
+            foreach (AnimationSO animation in listSo.Animations) 
+                blobAsset[animation.ID] = new int[animation.Meshes.Length];
 
             foreach ((
                          RefRO<AnimationDataHolderSubEntity> animation,
@@ -44,24 +38,22 @@ namespace Hub.Client.Scripts.Animations
                 ref BlobArray<AnimationData> data = ref blobBuilder.ConstructRoot<BlobArray<AnimationData>>();
 
                 BlobBuilderArray<AnimationData> animationDataBlobBuilderArray =
-                    blobBuilder.Allocate<AnimationData>(ref data, animationKeys.Length);
+                    blobBuilder.Allocate<AnimationData>(ref data, listSo.Animations.Count);
 
                 int index = 0;
-                foreach (AnimationSO.AnimationID animationID in animationKeys)
+                foreach (AnimationSO animation in listSo.Animations)
                 {
-                    AnimationSO def = listSo.GetAnimations(animationID);
-
                     BlobBuilderArray<int> blobBuilderArray =
                         blobBuilder.Allocate<int>(ref
-                            animationDataBlobBuilderArray[index].BatchMeshId, def.Meshes.Length);
+                            animationDataBlobBuilderArray[index].BatchMeshId, animation.Meshes.Length);
                     //
-                    animationDataBlobBuilderArray[index].FrameTimerMax = def.FrameTimerMax;
-                    animationDataBlobBuilderArray[index].FrameMax = def.Meshes.Length;
+                    animationDataBlobBuilderArray[index].FrameTimerMax = animation.FrameTimerMax;
+                    animationDataBlobBuilderArray[index].FrameMax = animation.Meshes.Length;
 
                     //
-                    for (int i = 0; i < def.Meshes.Length; i++)
+                    for (int i = 0; i < animation.Meshes.Length; i++)
                     {
-                        blobBuilderArray[i] = blobAsset[animationID][i];
+                        blobBuilderArray[i] = blobAsset[animation.ID][i];
                     }
 
                     index++;
@@ -72,6 +64,35 @@ namespace Hub.Client.Scripts.Animations
 
                 blobBuilder.Dispose();
             }
+        }
+
+        AnimationListSO GetAnimations(ref SystemState state)
+        {
+            foreach (RefRO<AnimationDefsRef> item in SystemAPI.Query<RefRO<AnimationDefsRef>>())
+                return item.ValueRO.Animations;
+            
+            return default;
+        }
+    }
+
+    public abstract class Parent
+    {
+        public abstract void SomeSome();
+    }
+
+    public abstract class Child : Parent
+    {
+        public override void SomeSome()
+        {
+            
+        }
+    }
+
+    public class GrandChild : Child
+    {
+        public new void SomeSome()
+        {
+            
         }
     }
 }

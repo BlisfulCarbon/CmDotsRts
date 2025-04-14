@@ -14,7 +14,7 @@ namespace Hub.Client.Scripts
                 Entity entity = GetEntity(TransformUsageFlags.Dynamic);
                 AddComponent(entity, new Target()
                 {
-                    TargetEntity = GetEntity(auth.Target)
+                    TargetEntity = GetEntity(auth.Target, TransformUsageFlags.Dynamic)
                 });
             }
         }

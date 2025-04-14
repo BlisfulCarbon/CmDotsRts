@@ -8,6 +8,9 @@ namespace Hub.Client.Scripts
         public float TimerMax;
         public float RandomWalkingDistMin;
         public float RandomWalkingDistMax;
+
+        public int NearbyZombieSpawnerMax;
+        public float NearbyZombieDistance;
         
         private class Baker : Baker<ZombieSpawnerAuth>
         {
@@ -21,6 +24,9 @@ namespace Hub.Client.Scripts
                     
                     RandomWalkingDistMin = auth.RandomWalkingDistMin,
                     RandomWalkingDistMax = auth.RandomWalkingDistMax,
+        
+                    NearbyZombieSpawnerMax = auth.NearbyZombieSpawnerMax,
+                    NearbyZombieDistance = auth.NearbyZombieDistance,
                 });
             }
         }
@@ -30,8 +36,13 @@ namespace Hub.Client.Scripts
     {
         public float RandomWalkingDistMin;
         public float RandomWalkingDistMax;
+        
+        public int NearbyZombieSpawnerMax;
+        public float NearbyZombieDistance;
+        
         // Timer
         public float TimerState;
         public float TimerMax;
+        
     }
 }

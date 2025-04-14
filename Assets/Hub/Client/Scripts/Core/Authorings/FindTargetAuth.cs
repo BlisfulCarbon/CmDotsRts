@@ -7,7 +7,7 @@ namespace Hub.Client.Scripts
     public class FindTargetAuth : MonoBehaviour
     {
         public float Range;
-        public Faction TargetFaction;
+        public FactionID TargetFactionID;
 
         public float UpdateTimer;
         
@@ -19,7 +19,7 @@ namespace Hub.Client.Scripts
                 AddComponent(entity, new FindTarget()
                 {
                    Range = auth.Range,
-                   TargetFaction = auth.TargetFaction,
+                   TargetFactionID = auth.TargetFactionID,
                    TimerDelay = auth.UpdateTimer,
                    TimerState = auth.UpdateTimer,
                 });
@@ -30,7 +30,7 @@ namespace Hub.Client.Scripts
     public struct FindTarget : IComponentData
     {
         public float Range;
-        public Faction TargetFaction;
+        public FactionID TargetFactionID;
         //
         public float TimerDelay;
         public float TimerState;

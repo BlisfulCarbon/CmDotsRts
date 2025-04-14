@@ -1,4 +1,3 @@
-using System;
 using Unity.Entities;
 using Unity.Rendering;
 using UnityEngine;
@@ -17,16 +16,11 @@ namespace Hub.Client.Scripts.Animations
                 Entity entity = GetEntity(TransformUsageFlags.Dynamic);
                 AnimationDataHolder animationDataHolder = new AnimationDataHolder();
 
-                int index = 0;
-                var animationKeys = Enum.GetValues(typeof(AnimationSO.AnimationID));
-                foreach (AnimationSO.AnimationID animationID in animationKeys)
+                foreach (AnimationSO animation in auth.Refs.Animations)
                 {
-                    AnimationSO def = auth.Refs.GetAnimations(animationID);
-                    
-                    //
-                    for (int i = 0; i < def.Meshes.Length; i++)
+                    for (int i = 0; i < animation.Meshes.Length; i++)
                     {
-                        Mesh mesh = def.Meshes[i];
+                        Mesh mesh = animation.Meshes[i];
 
                         Entity additionalEntity = CreateAdditionalEntity(TransformUsageFlags.None, true);
                         AddComponent(additionalEntity, new MaterialMeshInfo());
@@ -37,12 +31,10 @@ namespace Hub.Client.Scripts.Animations
                         });
                         AddComponent(additionalEntity, new AnimationDataHolderSubEntity()
                         {
-                            ID = animationID,
+                            ID = animation.ID,
                             MeshIndex = i,
                         });
                     }
-
-                    index++;
                 }
 
                 AddComponent(entity, new AnimationDefsRef()

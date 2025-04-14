@@ -1,6 +1,10 @@
+using Hub.Client.Scripts.MonoBehaviours;
 using Unity.Burst;
+using Unity.Collections;
 using Unity.Entities;
+using Unity.Physics;
 using Unity.Transforms;
+using UnityEngine;
 
 namespace Hub.Client.Scripts.Systems
 {
@@ -18,6 +22,9 @@ namespace Hub.Client.Scripts.Systems
             EntityCommandBuffer ecb = SystemAPI
                 .GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>()
                 .CreateCommandBuffer(state.WorldUnmanaged);
+            PhysicsWorldSingleton physic = SystemAPI.GetSingleton<PhysicsWorldSingleton>();
+            CollisionWorld collision = physic.CollisionWorld;
+            NativeList<DistanceHit> distanceHits = new NativeList<DistanceHit>(Allocator.Temp);
 
             foreach ((
                          RefRO<LocalTransform> transform,
@@ -32,6 +39,34 @@ namespace Hub.Client.Scripts.Systems
                     continue;
 
                 zombieSpawner.ValueRW.TimerState = zombieSpawner.ValueRO.TimerMax;
+
+                distanceHits.Clear();
+                CollisionFilter collisionFilter = new CollisionFilter()
+                {
+                    BelongsTo = ~0u,
+                    CollidesWith = 1u << GameAssets.UNITS_LAYER,
+                    GroupIndex = 0,
+                };
+
+                int nearbyZombieAmount = 0;
+                if (collision.OverlapSphere(
+                        transform.ValueRO.Position,
+                        zombieSpawner.ValueRO.NearbyZombieDistance,
+                        ref distanceHits, collisionFilter))
+                {
+                    foreach (var hit in distanceHits)
+                    {
+                        if (!SystemAPI.Exists(hit.Entity))
+                            continue;
+
+                        if (SystemAPI.HasComponent<Unit>(hit.Entity) && SystemAPI.HasComponent<Zombie>(hit.Entity))
+                            nearbyZombieAmount++;
+                    }
+                }
+
+                if (nearbyZombieAmount >= zombieSpawner.ValueRO.NearbyZombieSpawnerMax)
+                    continue;
+
 
                 Entity zombieEntity = state.EntityManager.Instantiate(entitiesReferences.ZombiePrefab);
                 SystemAPI.SetComponent(zombieEntity, LocalTransform.FromPosition(transform.ValueRO.Position));

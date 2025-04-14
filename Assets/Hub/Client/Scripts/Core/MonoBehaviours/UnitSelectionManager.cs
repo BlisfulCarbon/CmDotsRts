@@ -88,7 +88,7 @@ namespace Hub.Client.Scripts.MonoBehaviours
                         Filter = new CollisionFilter()
                         {
                             BelongsTo = ~0u,
-                            CollidesWith = 1u << GameAssets.UNITS_LAYER,
+                            CollidesWith = 1u << GameAssets.UNITS_LAYER | 1u << GameAssets.BUILDINGS_LAYER,
                             GroupIndex = 0,
                         }
                     };
@@ -131,11 +131,11 @@ namespace Hub.Client.Scripts.MonoBehaviours
 
                 bool isAttackingSingleTarget = false;
                 if (collisionWorld.CastRay(rayCastInput, out Unity.Physics.RaycastHit rayCastHit))
-                    if (entityManager.HasComponent<Unit>(rayCastHit.Entity))
+                    if (entityManager.HasComponent<Faction>(rayCastHit.Entity))
                     {
-                        Unit unit = entityManager.GetComponentData<Unit>(rayCastHit.Entity);
+                        Faction faction = entityManager.GetComponentData<Faction>(rayCastHit.Entity);
 
-                        if (unit.Faction == Faction.Zombie)
+                        if (faction.ID == FactionID.Zombie)
                         {
                             isAttackingSingleTarget = true;
                             

@@ -10,8 +10,8 @@ namespace Hub.Client.Scripts
         public float DistanceMin;
         public float DistanceMax;
 
-        public float3 TargetPosition;
-        public float3 OriginPosition;
+        public Transform TargetPosition;
+        public Transform OriginPosition;
 
         public uint RandomSeed;
 
@@ -25,8 +25,8 @@ namespace Hub.Client.Scripts
                     DistanceMin = auth.DistanceMin,
                     DistanceMax = auth.DistanceMax,
 
-                    TargetPosition = auth.TargetPosition,
-                    OriginPosition = auth.OriginPosition,
+                    TargetPosition = auth.TargetPosition.position,
+                    OriginPosition = auth.OriginPosition.position,
                     Random = new Random(auth.RandomSeed),
                 });
             }

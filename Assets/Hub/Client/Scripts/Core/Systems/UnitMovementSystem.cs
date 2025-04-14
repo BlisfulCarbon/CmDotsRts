@@ -4,6 +4,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Transforms;
+using UnityEngine;
 
 [BurstCompile]
 partial struct UnitMovementSystem : ISystem
@@ -31,14 +32,15 @@ partial struct UnitMovementSystem : ISystem
     }
 }
 
+[BurstCompile]
 public partial struct UnitMoverJob : IJobEntity
 {
     public float deltaTime;
 
     [BurstCompile]
-    public void Execute(ref LocalTransform localTransform, ref UnitMover mover, ref PhysicsVelocity physics)
+    public void Execute(ref LocalTransform transform, ref UnitMover mover, ref PhysicsVelocity physics)
     {
-        float3 moveDirection = mover.TargetPosition - localTransform.Position;
+        float3 moveDirection = mover.TargetPosition - transform.Position;
 
         if (math.lengthsq(moveDirection) < UnitMovementSystem.REACHED_TARGET_DISTANCE_SQ)
         {
@@ -47,15 +49,13 @@ public partial struct UnitMoverJob : IJobEntity
             mover.IsMoving = false;
             return;
         }
-        mover.IsMoving = true;
         
+        mover.IsMoving = true;
         moveDirection = math.normalize(moveDirection);
-
-        float rotationSpeed = mover.RotationSpeed;
-        localTransform.Rotation =
-            math.slerp(localTransform.Rotation,
+        transform.Rotation =
+            math.slerp(transform.Rotation,
                 quaternion.LookRotation(moveDirection, math.up()),
-                deltaTime * rotationSpeed);
+                deltaTime * mover.RotationSpeed);
 
         physics.Linear = moveDirection * mover.MoveSpeed;
         physics.Angular = float3.zero;
